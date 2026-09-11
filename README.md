@@ -1,8 +1,8 @@
 # 7H Music Prompter
 
-Elite instrumental prompt engineer for **Suno v4**, **Udio**, **Stable Audio**, and **ElevenLabs** + Serato-style in-browser **Chop Sampler**.
+Elite instrumental prompt engineer for **Suno v4**, **Udio**, **Stable Audio**, and **ElevenLabs** + Serato-style in-browser **Chop Sampler + Stem Splitter** (Serato Sample-like, as simple as Serato).
 
-Takes a beat idea or kit + sliders and emits a dual-format pack. Style tags stay **under 200 characters**. Vocals are locked out. No server — sampler decodes audio locally.
+Takes a beat idea or kit + sliders and emits a dual-format pack. Style tags stay **under 200 characters**. Vocals are locked out. No server — sampler + stems decode locally.
 
 ## Output format
 
@@ -44,16 +44,27 @@ Longer or conversational style strings get dropped by audio models. Do not write
 | Amapiano | log drum as bass, piano stabs | 110–115 |
 | Dembow | kick on 1 + and-of-2, snare on 3 | 88–100 |
 
-## Chop Sampler (Serato-style)
+## Chop Sampler — Serato Simple
+
+**As simple as Serato: Drop → Find Samples → Play Pads → Export.** Simple mode hides tweaks; Pro shows all.
 
 In-browser, no upload. All via Web Audio `decodeAudioData`.
 
-- **Drop audio** — WAV / MP3 / FLAC / OGG, decoded locally
-- **Auto-chop transients** — short-term energy + adaptive threshold + min-slice merge; drag markers, double-click to add, right-click to delete, trim start/end
-- **16 pads × 2 banks** — A/B = 32 slices, Serato-style LEDs, 4×4 grid
-- **QWERTY + MIDI** — `Q W E R / A S D F / Z X C V / 1 2 3 4` + `Shift+key` for Bank B, MIDI notes 36–51 (A) / 52–67 (B), chromatic C3+ in chromatic mode
-- **Slice / Chromatic** — slice = one chop per pad at original pitch, chromatic = selected chop pitched across 16 pads (semitone + fine)
-- **Playback** — one-shot / gate, gain / attack / release, reverse / loop, semitone / fine / root
-- **Export** — per-slice 16-bit WAV (RIFF PCM) or ZIP (STORE, no re-encode) `7H_chop_A01…B16.wav` + optional `7H_prompt_pack.txt`
+- **Drop audio** — WAV / MP3 / FLAC / OGG, decoded locally. Big drop zone + **Load demo break** (92 BPM dust break). Auto-chop on load.
+- **One-click Find Samples** — transient detection (short-term energy + adaptive threshold + min-slice merge). Drag markers, double-click to add, right-click to merge, trim. 16 equal fallback.
+- **16 pads × 2 banks** — A/B = 32 slices, Serato LEDs, 4×4 grid. Huge pads, bank toggle.
+- **QWERTY + MIDI** — `Q W E R / A S D F / Z X C V / 1 2 3 4` + `Shift+key` for Bank B, MIDI notes 36–51 (A) / 52–67 (B), chromatic C3+ (60–75)
+- **Slice / Chromatic** — slice = one chop per pad at original pitch; chromatic = selected chop pitched across 16 pads (root + semitone + fine, playbackRate)
+- **Playback** — one-shot / gate, gain / attack / release, reverse / loop, pitch
+- **Export** — per-slice 16-bit WAV (RIFF PCM) or ZIP STORE `7H_chop_A01…B16.wav` + `7H_prompt_pack.txt`
 
-Open `index.html` or serve the folder. Paste Style / Structure / Exclude into the engine you selected. Use Sampler tab for chops, then export to MPC / Serato / DAW.
+## Stem Splitter — Serato Sample-like (DSP Lite, No Upload)
+
+One-click **Split Stems** like Serato Sample 2.0 — instant, in-browser, no AI server:
+
+- **4 stems**: **Vocals** (centre 300–3400Hz), **Drums** (side + transient, highpass 150–180Hz), **Bass** (lowpass 250Hz), **Melody** (highpass remainder) — via `OfflineAudioContext` + Biquad + mid/side. DSP lite, not Demucs, but instant and private.
+- **Isolate & Solo** — per-stem Play / Solo / Mute / Gain, mini-waveform, one-click **Chop This Stem → Pads** (auto-rechop). Switch stem, pads follow.
+- **Use any stem as source** — original or any stem becomes the chop source (waveform updates, BPM estimate). Original always kept.
+- **Export** — per-stem WAVs + ZIP `7H_stem_vocals.wav` etc. + chops ZIP of active stem. For studio-grade AI, export original and run Demucs/Spleeter externally — this stays 100% local.
+
+Open `index.html` or serve the folder. Paste Style / Structure / Exclude into the engine you selected. Use **Sampler** tab: drop, Find Samples, play pads, Split Stems if needed, export to MPC / Serato / DAW.
