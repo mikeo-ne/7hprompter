@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>7H Music Prompter — instrumental beat prompts</title>
-  <meta name="description" content="7H Music Prompter: 200-char style tags for Suno, Udio, Stable Audio, ElevenLabs. Instrumental beats only. + Serato-style in-browser chop sampler." />
+  <meta name="description" content="7H Music Prompter: 200-char style tags for Suno, Udio, Stable Audio, ElevenLabs. Instrumental beats only. + Serato-style in-browser chop sampler with stem splitter." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&family=Unbounded:wght@700;800&display=swap" rel="stylesheet" />
@@ -18,14 +18,14 @@
         <div class="logo" aria-hidden="true"><span>7H</span></div>
         <div>
           <h1>7H <em>Music Prompter</em></h1>
-          <p>Instrumental prompts · Suno · Udio · Stable Audio · ElevenLabs · Chop Sampler</p>
+          <p>Instrumental prompts · Suno · Udio · Stable Audio · ElevenLabs · Chop Sampler + Stem Splitter</p>
         </div>
       </div>
       <div class="top-meta">
         <span class="chip on">Instrumental lock</span>
         <span class="chip on">Style ≤ 200</span>
         <span class="chip on">Sampler · in-browser</span>
-        <span class="chip">Genre → mood → inst → perc → mix → BPM</span>
+        <span class="chip on">Stems · DSP lite</span>
       </div>
     </header>
 
@@ -157,34 +157,41 @@
       </div>
     </section>
 
-    <!-- ─── SAMPLER ─── -->
+    <!-- ─── SAMPLER — SERATO SIMPLE + STEM SPLITTER ─── -->
     <section class="view" id="view-sampler">
-      <div class="sampler-hero">
-        <div>
-          <h2>Serato-style Chop Sampler</h2>
-          <p>Drop any audio — stays local. Auto-chop on transients · 16 pads × 2 banks (A/B) · slice &amp; chromatic · QWERTY + MIDI · WAV / ZIP export. No server.</p>
+      <div class="serato-bar">
+        <div class="serato-title">
+          <h2>Serato-style Chop Sampler <span>· as simple as Serato</span></h2>
+          <p>Drop → auto-find → play pads → split stems → export. No manual needed.</p>
         </div>
-        <div class="sampler-hero-actions">
+        <div class="serato-actions">
+          <div class="seg small" id="simpleSeg">
+            <button type="button" data-v="simple" class="on">Simple</button>
+            <button type="button" data-v="pro">Pro</button>
+          </div>
           <button class="ghost" id="samDemo" type="button">Load demo break</button>
           <label class="ghost file-btn">Open audio <input id="samFile" type="file" accept="audio/*" hidden></label>
-          <span class="mono small-muted" id="samStatus">No sample — drop audio</span>
         </div>
       </div>
 
       <div id="samDrop" class="drop" tabindex="0" role="button" aria-label="Drop audio here">
         <div class="drop-inner">
           <div class="drop-icon">◈</div>
-          <strong>Drop audio here</strong>
+          <strong>Drop any audio here</strong>
           <span>WAV · MP3 · FLAC · OGG — decoded in your browser, nothing uploaded</span>
-          <small>or click to browse · also try demo break</small>
+          <small>or click to browse · demo break is 92 BPM swung dust break</small>
+        </div>
+        <div class="drop-steps">
+          <span><b>1</b> Drop</span><span class="arrow">→</span><span><b>2</b> Auto-find</span><span class="arrow">→</span><span><b>3</b> Pad</span><span class="arrow">→</span><span><b>4</b> Stem / Export</span>
         </div>
       </div>
+      <div class="mono small-muted" style="text-align:center;margin:6px 0 2px" id="samStatus">No sample — drop audio</div>
 
       <div class="sampler-layout">
         <!-- waveform -->
         <div class="panel waveform-panel">
           <div class="panel-head">
-            <h3>Waveform / Chops</h3>
+            <h3>Waveform / Chops <span class="mono small-muted" style="text-transform:none;letter-spacing:0">click waveform to audition · drag markers · double-click to add · right-click to merge</span></h3>
             <div class="seg small" id="samModeSeg">
               <button type="button" data-v="slice" class="on">Slice</button>
               <button type="button" data-v="chromatic">Chromatic</button>
@@ -195,20 +202,22 @@
             <canvas id="samChop" width="1000" height="180"></canvas>
             <div id="samPlayhead" class="playhead"></div>
           </div>
-          <div class="wave-controls">
+          <!-- Simple controls row -->
+          <div class="wave-controls simple-row">
+            <button class="primary small" id="samAuto" type="button">Find Samples</button>
+            <button class="ghost small" id="samEqual" type="button">16 equal</button>
+            <span class="mono small-muted">Chops <b class="val" id="samCount">0</b>/32</span>
+            <span class="mono small-muted" id="samBpmKey" style="margin-left:auto">—</span>
+          </div>
+          <!-- Pro controls (hidden in simple) -->
+          <div class="wave-controls pro-row">
             <label class="field small">Sensitivity <span class="mono val" id="samSensV">52</span><input id="samSens" type="range" min="0" max="100" value="52"></label>
             <label class="field small">Min slice <span class="mono val" id="samMinV">160ms</span><input id="samMin" type="range" min="40" max="500" value="160" step="10"></label>
-            <label class="field small">Chops <span class="mono val" id="samCount">0</span><span class="mono" style="font-size:10px;color:var(--dim)">/ 32</span></label>
-            <button class="ghost small" id="samAuto" type="button">Auto-chop</button>
-            <button class="ghost small" id="samEqual" type="button">16 equal</button>
             <button class="ghost small" id="samClear" type="button">Clear</button>
-          </div>
-          <div class="wave-controls">
             <label class="field small" style="flex:1">Start trim <input id="samTrimStart" type="range" min="0" max="1000" value="0"></label>
             <label class="field small" style="flex:1">End trim <input id="samTrimEnd" type="range" min="0" max="1000" value="1000"></label>
             <button class="ghost small" id="samTrimApply" type="button">Apply</button>
           </div>
-          <div class="wave-hint mono">Drag markers · double-click waveform to add · right-click marker to delete · click waveform to audition</div>
           <div class="chops-list" id="samChopsList"></div>
         </div>
 
@@ -226,56 +235,82 @@
             </div>
           </div>
           <div class="pads16" id="samPads"></div>
-          <div class="pad-hints">
-            <span class="mono">QWERTY Q W E R / A S D F / Z X C V / 1 2 3 4 — 16 pads · Bank A/B = 32 chops</span>
-            <span class="mono">MIDI C1–D#2 (36–51 A, 52–67 B) · Chromatic on C3+</span>
+          <div class="pad-hints simple-row">
+            <span class="mono">Q W E R / A S D F / Z X C V / 1 2 3 4 — 16 pads · Shift = Bank B</span>
           </div>
-          <div class="sam-controls">
+          <div class="pad-hints pro-row">
+            <span class="mono">MIDI C1–D#2 (36–51 A, 52–67 B) · Chromatic on C3+ (60–75) · Hold for gate</span>
+          </div>
+          <div class="sam-controls simple-row">
+            <label class="check"><input type="checkbox" id="samLoop"> Loop</label>
+            <label class="field small">Pitch <span class="mono val" id="samTuneV">0</span><input id="samTune" type="range" min="-12" max="12" value="0"></label>
+            <button class="ghost small" id="samMidiBtn" type="button">MIDI</button>
+            <span class="mono small-muted" id="samMidiStatus">—</span>
+          </div>
+          <div class="sam-controls pro-row">
             <label class="check"><input type="checkbox" id="samReverse"> Reverse</label>
-            <label class="check"><input type="checkbox" id="samLoop"> Loop slice</label>
             <label class="field small">Gain <span class="mono val" id="samGainV">100%</span><input id="samGain" type="range" min="0" max="150" value="100"></label>
             <label class="field small">Attack <span class="mono val" id="samAttackV">2ms</span><input id="samAttack" type="range" min="0" max="80" value="2"></label>
             <label class="field small">Release <span class="mono val" id="samReleaseV">120ms</span><input id="samRelease" type="range" min="10" max="800" value="120"></label>
           </div>
-          <div class="sam-controls">
+          <div class="sam-controls pro-row">
             <label class="field small">Root <select id="samRoot"><option value="0">C</option><option value="1">C#</option><option value="2">D</option><option value="3">D#</option><option value="4">E</option><option value="5">F</option><option value="6">F#</option><option value="7">G</option><option value="8">G#</option><option value="9">A</option><option value="10">A#</option><option value="11">B</option></select></label>
-            <label class="field small">Semitone <span class="mono val" id="samTuneV">0</span><input id="samTune" type="range" min="-12" max="12" value="0"></label>
             <label class="field small">Fine <span class="mono val" id="samFineV">0ct</span><input id="samFine" type="range" min="-100" max="100" value="0"></label>
-            <span class="mono small-muted" id="samMidiStatus">MIDI: —</span>
-          </div>
-          <div class="sam-midi-row">
-            <button class="ghost small" id="samMidiBtn" type="button">Enable MIDI</button>
-            <span class="mono small-muted">Click pad then QWERTY or MIDI. Hold for gate.</span>
           </div>
         </div>
+      </div>
+
+      <!-- STEM SPLITTER — SERATO SAMPLE STYLE -->
+      <div class="panel stems-panel" id="stemsPanel">
+        <div class="panel-head stems-head">
+          <div>
+            <h3>Stem Splitter <span class="chip on" style="font-size:10px;padding:2px 6px;margin-left:6px">Serato Sample-like</span></h3>
+            <p class="mono small-muted" style="text-transform:none;letter-spacing:0;margin-top:2px">Split into Vocals / Drums / Bass / Melody — DSP lite, instant, no upload. Isolate, solo, chop any stem.</p>
+          </div>
+          <div class="stems-head-actions">
+            <button class="primary" id="splitStemsBtn" type="button">Split Stems</button>
+            <button class="ghost small" id="stemsPlayMix" type="button">Play Mix</button>
+          </div>
+        </div>
+        <div class="stems-grid" id="stemsGrid">
+          <!-- generated by JS: 4 stem cards -->
+        </div>
+        <div class="stems-foot">
+          <span class="mono small-muted" id="stemsStatus">No stems — drop audio then Split</span>
+          <div class="stems-foot-actions">
+            <label class="check"><input type="checkbox" id="stemsAutoChop" checked> Auto-rechop when switching stem</label>
+            <button class="ghost small" id="stemsUseOriginal" type="button">Use Original</button>
+            <button class="ghost small" id="stemsExportAll" type="button">Export Stems ZIP</button>
+          </div>
+        </div>
+        <div class="stems-legend mono small-muted">DSP lite: Bass = lowpass 250Hz, Vocals = centre + 300–3400Hz band, Drums = side + transients, Melody = instrumental remainder. Instant. For AI-quality, export stems and run Demucs/Spleeter externally — this stays 100% in-browser.</div>
       </div>
 
       <div class="panel export-panel">
         <div class="export-head">
           <div>
             <h3>Export</h3>
-            <p class="mute">16-bit WAV per chop · ZIP bundle · pack + 7H prompt tags. All rendered locally.</p>
+            <p class="mute">16-bit WAV per chop · ZIP bundle · stems + 7H prompt pack. All rendered locally.</p>
           </div>
           <div class="export-actions">
-            <button class="ghost" id="samExportOne" type="button">Export WAV (selected)</button>
-            <button class="ghost" id="samExportEach" type="button">Export all WAVs</button>
-            <button class="primary" id="samExportZip" type="button">Export ZIP (all chops)</button>
+            <button class="ghost" id="samExportOne" type="button">WAV (sel)</button>
+            <button class="ghost" id="samExportEach" type="button">All WAVs</button>
+            <button class="primary" id="samExportZip" type="button">ZIP (chops)</button>
           </div>
         </div>
         <div class="export-foot mono small-muted">
-          <span>WAV: 16-bit PCM, sampleRate = source. ZIP: STORE (no re-encode). Filenames: <code>7H_chop_A01.wav … B16.wav</code></span>
-          <button class="ghost small" id="samCopyPack" type="button">Copy 7H pack for this chop</button>
+          <span>WAV: 16-bit PCM, sampleRate = source. ZIP: STORE. <code>7H_chop_A01.wav … B16.wav</code> · Stems: <code>7H_stem_bass.wav</code> etc.</span>
+          <button class="ghost small" id="samCopyPack" type="button">Copy 7H pack</button>
         </div>
       </div>
 
       <div class="howto">
-        <h3>Sampler how-to</h3>
+        <h3>Sampler — Serato simple</h3>
         <ol>
-          <li><strong>Drop audio</strong> or Load demo break (synthetic 92 BPM dust break). Audio never leaves your browser — <code>AudioContext.decodeAudioData</code> only.</li>
-          <li><strong>Auto-chop</strong> finds transients via short-term energy + adaptive threshold. Trim Sensitivity / Min-slice, or hit 16 equal. Drag markers to tweak.</li>
-          <li><strong>Pads</strong> 4×4 = 16 per bank, A/B = 32 slices. LEDs mirror Serato. Click / QWERTY (<code>Q W E R / A S D F / Z X C V / 1 2 3 4</code>) / MIDI notes 36–67.</li>
-          <li><strong>Slice</strong> plays each chop at original pitch. <strong>Chromatic</strong> pitches the <em>selected</em> chop across all 16 pads (C2 root + semitone). Gate vs One-shot.</li>
-          <li><strong>Export</strong> WAV or ZIP. All slices are cut via <code>OfflineAudioContext</code>-grade slicing and encoded to 16-bit WAV with proper RIFF headers — ready for MPC / Serato / DAW.</li>
+          <li><strong>1 Drop</strong> — wav/mp3/flac/ogg. Or <strong>Load demo break</strong>. Stays in browser (<code>decodeAudioData</code>).</li>
+          <li><strong>2 Find Samples</strong> — auto-chop transients. Or <strong>Split Stems</strong> to isolate Vocals/Drums/Bass/Melody then <strong>Chop This Stem</strong> → pads.</li>
+          <li><strong>3 Play Pads</strong> — click, <code>Q W E R / A S D F / Z X C V / 1 2 3 4</code> (Shift = Bank B), or MIDI C1–B2. <strong>Slice</strong> = one chop per pad, <strong>Chromatic</strong> = selected chop pitched across pads.</li>
+          <li><strong>4 Export</strong> — WAV or ZIP. Stems also exportable. Ready for MPC / Serato / DAW. Simple mode hides tweaks; Pro shows all.</li>
         </ol>
       </div>
     </section>
@@ -314,7 +349,11 @@
         </article>
         <article>
           <h3>Chop Sampler — Serato-style, in-browser</h3>
-          <p>Drop audio, auto-chop transients (energy + threshold + min-distance), 16 pads × 2 banks = 32 slices, QWERTY (<code>Q W E R A S D F Z X C V 1 2 3 4</code>) and MIDI (C1–D#2), slice vs chromatic (pitch selected chop across pads), WAV + ZIP export. All local via Web Audio.</p>
+          <p>Drop audio, auto-chop transients (energy + threshold + min-distance), 16 pads × 2 banks = 32 slices, QWERTY (<code>Q W E R A S D F Z X C V 1 2 3 4</code>) and MIDI (C1–D#2), slice vs chromatic, WAV + ZIP export. All local via Web Audio.</p>
+        </article>
+        <article>
+          <h3>Stem Splitter — Serato Sample-like (DSP Lite)</h3>
+          <p>One-click <strong>Split Stems</strong> into <strong>Vocals / Drums / Bass / Melody</strong> using in-browser DSP (no upload, no AI server). Bass = lowpass 250Hz, Vocals = centre mid 300–3400Hz, Drums = side + transient highpass, Melody = remainder instrumental. Solo/mute per stem, audition, then <strong>Chop This Stem</strong> to send any stem to the 32 pads. Export stems as WAV/ZIP. For studio-grade AI (Demucs), export the original and run externally — this stays instant and private.</p>
         </article>
         <article>
           <h3>Drum grids</h3>
@@ -330,7 +369,7 @@
       </div>
     </section>
 
-    <footer class="site">7H Music Prompter · chop sampler · instrumental only · hip-hop · R&amp;B · dancehall · afrobeats · any riddim · no upload, stays in browser</footer>
+    <footer class="site">7H Music Prompter · chop sampler + stem splitter · instrumental only · hip-hop · R&amp;B · dancehall · afrobeats · any riddim · no upload, stays in browser</footer>
   </div>
   <script src="beats.js"></script>
   <script src="engine.js"></script>
