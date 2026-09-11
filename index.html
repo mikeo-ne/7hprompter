@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>7H Music Prompter — instrumental beat prompts</title>
+  <meta name="description" content="7H Music Prompter: 200-char style tags for Suno, Udio, Stable Audio, ElevenLabs. Instrumental beats only." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&family=Unbounded:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%230b0a08' width='32' height='32' rx='6'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial Black' font-size='11' fill='%23ff6a1a'%3E7H%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><span>7H</span></div>
+        <div>
+          <h1>7H <em>Music Prompter</em></h1>
+          <p>Instrumental prompts · Suno · Udio · Stable Audio · ElevenLabs</p>
+        </div>
+      </div>
+      <div class="top-meta">
+        <span class="chip on">Instrumental lock</span>
+        <span class="chip on">Style ≤ 200</span>
+        <span class="chip">Genre → mood → inst → perc → mix → BPM</span>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab" data-view="build" aria-selected="true">Build</button>
+      <button class="tab" data-view="library" aria-selected="false">Library</button>
+      <button class="tab" data-view="method" aria-selected="false">Method</button>
+    </nav>
+
+    <section class="view show" id="view-build">
+      <div class="title-row">
+        <div class="beat-title" id="beatTitle">DUST POCKET  ·  92</div>
+        <div class="actions" style="margin:0">
+          <button class="ghost" id="reroll" type="button">Rename</button>
+          <button class="ghost" id="randomKit" type="button">Random kit</button>
+        </div>
+      </div>
+
+      <div class="idea-box">
+        <label class="field">Beat idea
+          <textarea id="idea" rows="2" placeholder="e.g. dark Lagos night-drive afrobeats, shekere, empty pocket for a rapper, 104 BPM Fmin"></textarea>
+        </label>
+        <div class="idea-actions">
+          <button class="primary" id="forge" type="button">Forge from idea</button>
+          <span class="match" id="matchNote"></span>
+        </div>
+      </div>
+
+      <div class="families" id="families"></div>
+      <div class="pads" id="pads"></div>
+
+      <div class="desk">
+        <div class="panel">
+          <h3>Pocket</h3>
+          <div class="bpm-row">
+            <div class="bpm-led" id="bpmLed">92<small>BPM</small></div>
+            <input id="bpm" type="range" min="60" max="180" value="92" />
+            <div></div>
+          </div>
+          <div class="faders">
+            <div class="fader"><label>Swing <b id="swingV">62</b></label><input id="swing" type="range" min="0" max="100" value="62" /></div>
+            <div class="fader"><label>Density <b id="densityV">48</b></label><input id="density" type="range" min="0" max="100" value="48" /></div>
+            <div class="fader"><label>Dark <b id="darknessV">55</b></label><input id="darkness" type="range" min="0" max="100" value="55" /></div>
+            <div class="fader"><label>Punch <b id="punchV">70</b></label><input id="punch" type="range" min="0" max="100" value="70" /></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Lock</h3>
+          <div class="grid-2">
+            <label class="field">Key
+              <select id="key"></select>
+            </label>
+            <label class="field">Engine
+              <div class="seg" id="engineSeg">
+                <button type="button" data-v="suno" class="on">Suno</button>
+                <button type="button" data-v="udio">Udio</button>
+                <button type="button" data-v="stable">Stable</button>
+                <button type="button" data-v="eleven">Eleven</button>
+              </div>
+            </label>
+            <label class="field">Vocal space
+              <div class="seg" id="pocketSeg">
+                <button type="button" data-v="empty" class="on">Empty</button>
+                <button type="button" data-v="melodic">Melodic</button>
+                <button type="button" data-v="full">Full</button>
+              </div>
+            </label>
+            <label class="field">Form
+              <div class="seg" id="formSeg">
+                <button type="button" data-v="loop">Loop</button>
+                <button type="button" data-v="beat" class="on">Beat</button>
+                <button type="button" data-v="track">Track</button>
+              </div>
+            </label>
+          </div>
+          <div class="toggle">
+            <div>
+              <span>Strict instrumental lock</span>
+              <small>Style ends instrumental, no vocals. Metatags open with [Instrumental]. Exclude is stacked.</small>
+            </div>
+            <button class="switch on" id="strict" type="button" role="switch" aria-checked="true"><i></i></button>
+          </div>
+          <div class="kit-readout" id="kitRead"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="copyAll" type="button">Copy 7H pack</button>
+        <span class="engine-hint" id="engineHint"></span>
+      </div>
+
+      <div class="outputs">
+        <article class="out">
+          <header>
+            <h3>🎯 7H Style Tags</h3>
+            <span class="count" id="styleCount">0 / 200</span>
+          </header>
+          <pre id="styleOut"></pre>
+          <footer><button class="copy" id="copyStyle" type="button">Copy to Style Box</button></footer>
+        </article>
+        <article class="out">
+          <header>
+            <h3>🎼 Structure &amp; Metatags</h3>
+            <span class="count" id="structCount">0 / 5000</span>
+          </header>
+          <pre id="structOut"></pre>
+          <footer><button class="copy" id="copyStruct" type="button">Copy structure</button></footer>
+        </article>
+        <article class="out">
+          <header>
+            <h3>🚫 Negative Tags</h3>
+            <span class="count" id="exclCount">0 / 1000</span>
+          </header>
+          <pre id="exclOut"></pre>
+          <footer><button class="copy" id="copyExcl" type="button">Copy to Exclude Box</button></footer>
+        </article>
+      </div>
+
+      <div class="howto">
+        <h3>Paste</h3>
+        <ol>
+          <li><strong>Style Box</strong> — the 200-char tag string. Models drop tags past this.</li>
+          <li><strong>Lyrics / prompt</strong> — Structure &amp; Metatags. Starts with <code>[Instrumental]</code>. No words to sing.</li>
+          <li><strong>Exclude / negative</strong> — vocals, singing, rapping, choir, toasting.</li>
+          <li>Suno: Custom + Instrumental ON. Udio: add <code>/instrumental</code> (already in structure). Stable / Eleven: Style is the prompt.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="view" id="view-library">
+      <div class="lib-grid" id="lib"></div>
+    </section>
+
+    <section class="view" id="view-method">
+      <div class="method">
+        <article>
+          <h3>7H Music Prompter</h3>
+          <p>Elite instrumental prompt engineer for <strong>Suno v4</strong>, <strong>Udio</strong>, <strong>Stable Audio</strong>, and <strong>ElevenLabs</strong>. Input a beat idea or twist the kits. Output is always dual-format, always instrumental.</p>
+        </article>
+        <article>
+          <h3>Tag weighting (order is load-bearing)</h3>
+          <div class="formula">Genre → Subgenre/Mood → Primary Instruments → Percussion Style → Production/Mix → BPM &amp; Key → instrumental, no vocals</div>
+          <p>Style strings stay <strong>under 200 characters</strong>. Longer copy gets dropped. Conversational sentences are worse than comma tags.</p>
+        </article>
+        <article>
+          <h3>Dual output</h3>
+          <ul>
+            <li><strong>Output A — Style / Tag Box</strong> — condensed comma-separated tags.</li>
+            <li><strong>Output B — Structure &amp; Metatags</strong> — <code>[Instrumental]</code>, <code>[Intro]</code>, <code>[Verse]</code>, <code>[Drop]</code>, <code>[Outro]</code>.</li>
+            <li><strong>Negative Tags</strong> — copy to Exclude. Vocals never belong in a beat prompt.</li>
+          </ul>
+        </article>
+        <article>
+          <h3>Instrumental guarantee</h3>
+          <ol>
+            <li>Style ends with <code>instrumental, no vocals</code>.</li>
+            <li>Structure opens with <code>[Instrumental]</code> and repeats no-vocals on every section.</li>
+            <li>Negatives: <code>vocals, singing, rapping, choir, spoken word, ad-libs, toasting</code>.</li>
+          </ol>
+          <p>Never write “R&amp;B ballad” or “afrobeats song”. Write “R&amp;B instrumental beat”, “afrobeats instrumental”, “dancehall riddim”.</p>
+        </article>
+        <article>
+          <h3>Drum grids</h3>
+          <ul>
+            <li><strong>Boom bap</strong> — snare on 2 and 4, swung hats. 88–96.</li>
+            <li><strong>Trap</strong> — snare on 3, 808 slides, triplet hats. 130–150.</li>
+            <li><strong>Dancehall</strong> — snare on 3, kick on 1, shuffle. 90–105.</li>
+            <li><strong>Afrobeats</strong> — snare on 2+4, shekere, talking drum, muted guitar. 95–108.</li>
+            <li><strong>Amapiano</strong> — log drum as bass, piano stabs. 110–115.</li>
+            <li><strong>Dembow</strong> — kick on 1 + and-of-2, snare on 3. 88–100.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <footer class="site">7H Music Prompter · instrumental only · hip-hop · R&amp;B · dancehall · afrobeats · any riddim</footer>
+  </div>
+  <script src="beats.js"></script>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
